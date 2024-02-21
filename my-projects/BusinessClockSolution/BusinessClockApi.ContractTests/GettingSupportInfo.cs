@@ -5,6 +5,19 @@ using NSubstitute;
 namespace BusinessClockApi.ContractTests;
 public class GettingSupportInfo
 {
+
+    [Fact]
+    public async Task Ready()
+    {
+        var host = await AlbaHost.For<Program>();
+        var response = await host.Scenario(api =>
+        {
+            api.Get.Url("/support-info");
+            api.StatusCodeShouldBeOk();
+        });
+    }
+
+
     [Fact]
     public async Task WhenWeAreOpen()
     {
