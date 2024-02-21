@@ -1,6 +1,17 @@
-@IssueTrackerApi_HostAddress = http://localhost:5289
+@IssueTrackerApi_HostAddress = http://localhost:1336
 
 GET {{IssueTrackerApi_HostAddress}}/weatherforecast/
 Accept: application/json
+
+###
+
+POST {{IssueTrackerApi_HostAddress}}/issues
+Accept: application/json
+Content-Type: application/json
+
+{
+  "software": "Excel",
+  "description": "blows up"
+}
 
 ###
