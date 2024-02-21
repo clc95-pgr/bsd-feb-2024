@@ -1,9 +1,12 @@
+using BusinessClockApi.Services;
 using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddSingleton<ISystemTime, SystemTime>();
+builder.Services.AddSingleton<IProvideBusinessClock, StandardBusinessClock>();
 
 // Above line is 'interna' configuration
 var app = builder.Build();
