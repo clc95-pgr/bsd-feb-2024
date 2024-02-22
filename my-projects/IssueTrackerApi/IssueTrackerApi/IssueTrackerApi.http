@@ -15,8 +15,8 @@ Accept: application/json
 Content-Type: application/json
 
 {
-  "software": "Test",
-  "description": "Desc"
+  "software": "Pancake",
+  "description": "Syrup"
 }
 
 ###

@@ -1,14 +1,37 @@
 using IssueTrackerApi;
 using IssueTrackerApi.Services;
 using Marten;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddOpenTelemetry()
+    .ConfigureResource(b => b.AddService("issues-api"))
+    .WithTracing(b =>
+    {
+        b.AddAspNetCoreInstrumentation();
+        b.AddHttpClientInstrumentation();
+        b.AddZipkinExporter();
+        b.AddHttpClientInstrumentation();
+        b.AddConsoleExporter();
+        b.SetSampler(new AlwaysOnSampler());
+    })
+    .WithMetrics(opts =>
+    {
+        opts.AddPrometheusExporter();
+        opts.AddHttpClientInstrumentation();
+        opts.AddRuntimeInstrumentation();
+        opts.AddAspNetCoreInstrumentation();
+    });
 
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
 });
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHealthChecks();
