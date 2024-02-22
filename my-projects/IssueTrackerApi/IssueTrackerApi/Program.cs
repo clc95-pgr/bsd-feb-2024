@@ -1,5 +1,7 @@
+using IssueTrackerApi.Services;
 using Marten;
 using System.Text.Json.Serialization;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +17,15 @@ builder.Services.AddSwaggerGen();
 
 var connectionString = builder.Configuration.GetConnectionString("issues")
     ?? throw new Exception("No connection string for Issues!");
+
+var apiUrl = builder.Configuration.GetValue<string>("api")
+    ?? throw new Exception("No API url found!");
+
+//builder.Services.AddHttpClient(); // global http client
+builder.Services.AddHttpClient<BusinessClockHttpService>(client =>
+{
+    client.BaseAddress = new Uri(apiUrl);
+}).AddPolicyHandler(Get);
 
 builder.Services.AddMarten(options =>
 {

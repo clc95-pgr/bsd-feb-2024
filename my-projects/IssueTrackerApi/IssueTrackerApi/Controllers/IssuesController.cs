@@ -1,9 +1,14 @@
-﻿using Marten;
+﻿using IssueTrackerApi.Services;
+using Marten;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IssueTrackerApi.Controllers;
 
-public class IssuesController(IDocumentSession session, ILogger<IssuesController> logger) : ControllerBase
+public class IssuesController(
+    IDocumentSession session,
+    ILogger<IssuesController> logger,
+    BusinessClockHttpService api
+    ) : ControllerBase
 {
     [HttpPost("/issues")]
     public async Task<ActionResult> AddIssueAsync([FromBody] IssuesRequest request)
@@ -19,8 +24,18 @@ public class IssuesController(IDocumentSession session, ILogger<IssuesController
 
         session.Insert(response);
         await session.SaveChangesAsync();
+        var support = await api.GetCurrentSupportInformationAsync();
 
-        return Ok(response);
+        var model = new IssueResponseModel()
+        {
+            Id = response.Id,
+            Software = response.Software,
+            Description = response.Description,
+            Logged = response.Logged,
+            Status = response.Status,
+            support = support
+        };
+        return Ok(model);
     }
 
     [HttpGet("/issues")]
@@ -66,3 +81,15 @@ public record IssueResponse(
 public enum IssueStatus { Pending };
 
 public record IssuesResponseCollection(IReadOnlyList<IssueResponse> Data);
+
+public record IssueResponseSupportInformation(string Message, string Name, string Phone);
+
+public record IssueResponseModel
+{
+    public Guid Id { get; set; }
+    public string Software { get; set; }
+    public string Description { get; set; }
+    public DateTimeOffset Logged { get; set; }
+    public IssueStatus Status { get; set; }
+    public SupportResponse? support { get; set; }
+}
