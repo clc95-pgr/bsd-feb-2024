@@ -1,4 +1,5 @@
 ﻿using Alba;
+using BusinessClockApi.Services;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 
@@ -17,6 +18,13 @@ public class GettingSupportInfo
         });
     }
 
+    [Fact]
+    public async Task CorrectType()
+    {
+        var host = await AlbaHost.For<Program>();
+        Assert.IsType<StandardBusinessClock>(host.Services.GetRequiredService<IProvideBusinessClock>());
+        Assert.IsType<SystemTime>(host.Services.GetRequiredService<ISystemTime>());
+    }
 
     [Fact]
     public async Task WhenWeAreOpen()

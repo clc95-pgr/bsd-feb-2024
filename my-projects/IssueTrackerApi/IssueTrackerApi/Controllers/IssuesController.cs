@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace IssueTrackerApi.Controllers;
 
-public class IssuesController(IDocumentSession session) : ControllerBase
+public class IssuesController(IDocumentSession session, ILogger<IssuesController> logger) : ControllerBase
 {
     [HttpPost("/issues")]
     public async Task<ActionResult> AddIssueAsync([FromBody] IssuesRequest request)
     {
+        logger.LogInformation("Got a request for {software}", request);
         var response = new IssueResponse(
             Guid.NewGuid(),
             request.Software,
