@@ -11,6 +11,7 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddHealthChecks();
 
 var connectionString = builder.Configuration.GetConnectionString("issues")
     ?? throw new Exception("No connection string for Issues!");
